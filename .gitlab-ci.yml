@@ -1,0 +1,27 @@
+image: debian:bullseye
+
+stages:
+  - build
+
+.tags: &tags
+  tags:
+    - librem5
+
+before_script:
+  - apt-get -y update
+  - apt-get -y install wget ca-certificates gnupg cargo libudev-dev libdbus-1-dev
+  - echo "deb [trusted=yes] http://ci.puri.sm/ bullseyeci main" > /etc/apt/sources.list.d/ci.list
+  - wget -O- https://ci.puri.sm/ci-repo.key | apt-key add -
+  - apt-get -y update
+
+build_cargo:
+  tags:
+    - librem5
+  stage: build
+  artifacts:
+    paths:
+      - _build
+    expire_in: 3h
+  script:
+    - cargo build
+    - cargo build --release
